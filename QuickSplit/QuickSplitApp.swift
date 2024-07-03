@@ -7,11 +7,12 @@
 
 import SwiftUI
 
+
 @main
 struct QuickSplitApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            QuickSplitView()
         }
     }
 }
