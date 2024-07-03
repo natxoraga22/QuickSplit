@@ -23,7 +23,6 @@ struct QuickSplitModel {
     }
     
     mutating func computeAmountsPerPerson() {
-        print("computeAmountsPerPerson()")
         let amount = amount ?? 0.0
         let tipPercentage = tipPercentage ?? 0
         let totalAmount = amount + (amount * Double(tipPercentage)/100.0)
