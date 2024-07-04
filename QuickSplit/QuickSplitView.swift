@@ -70,21 +70,16 @@ struct QuickSplitView: View {
                 .multilineTextAlignment(.trailing)
                 .focused($focusedField, equals: .amount)
                 .keyboardType(.decimalPad)
-                .keyboardDoneButton(condition: focusedField == .amount) {
+                .keyboardToolbarButton(condition: focusedField == .amount) {
                     Button("Next") {
                         focusedField = .tipPercentage
                     }
                 }
-                // Hack to refresh the view when it loses focus (forcing format to be applied)
-                .id(refreshAmountInput)
-                .onChange(of: focusedField) { oldFocus, newFocus in
-                    if oldFocus == .amount && newFocus != .amount {
-                        refreshAmountInput.toggle()
-                    }
-                }
+                .refreshOnLostFocus(isFocused: focusedField == .amount, refreshToggle: $refreshAmountInput)
         }
     }
     
+    @State private var refreshTipPercentageInput = false
     var tipPercentageInput: some View {
         HStack {
             Text("Tip")
@@ -94,16 +89,12 @@ struct QuickSplitView: View {
                 .multilineTextAlignment(.trailing)
                 .focused($focusedField, equals: .tipPercentage)
                 .keyboardType(.numberPad)
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        if focusedField == .tipPercentage {
-                            Spacer()
-                            Button("Done") {
-                                focusedField = nil
-                            }
-                        }
+                .keyboardToolbarButton(condition: focusedField == .tipPercentage) {
+                    Button("Done") {
+                        focusedField = nil
                     }
                 }
+                .refreshOnLostFocus(isFocused: focusedField == .tipPercentage, refreshToggle: $refreshTipPercentageInput)
         }
     }
     
@@ -128,90 +119,6 @@ struct QuickSplitView: View {
             }
         }
         .pickerStyle(.segmented)
-    }
-}
-
-
-struct PersonView: View {
-    let currencyCode = Locale.current.currency?.identifier ?? "EUR"
-    let currencySymbol = Locale.current.currencySymbol ?? "€"
-    
-    enum Field: Hashable {
-        case percentage, offset
-    }
-        
-    @Bindable var person: Person
-    let splitType: SplitType
-    @FocusState private var focusedField: Field?
-    
-    var body: some View {
-        VStack(spacing: 8) {
-            HStack {
-                Image(systemName: "person.crop.circle.fill")
-                    .imageScale(.large)
-                    .font(.largeTitle)
-                    .opacity(0.3)
-                
-                VStack {
-                    HStack {
-                        Spacer()
-                        switch splitType {
-                            case .parts: partsInput
-                            case .percentages: percentageInput
-                        }
-                        Spacer()
-                        offsetInput
-                    }
-                    
-                    amountToPayView
-                }
-            }
-            Divider()
-        }
-    }
-    
-    var partsInput: some View {
-        Stepper("\(person.parts) part(s)", value: $person.parts, in: 0...100)
-            .font(.title2)
-            .fixedSize()
-    }
-    
-    var percentageInput: some View {
-        TextField("Percentage", value: $person.percentage, format: .percent, prompt: Text("0%"))
-            .font(.title2)
-            .fixedSize()
-            .keyboardType(.numberPad)
-    }
-    
-    var offsetInput: some View {
-        Group {
-            Text("+")
-            TextField("Offset", value: $person.offset, format: .currency(code: currencyCode), prompt: Text("0 \(currencySymbol)"))
-                .font(.title2)
-                .fixedSize()
-                .focused($focusedField, equals: .offset)
-                .keyboardType(.numberPad)
-                .toolbar {
-                    ToolbarItemGroup(placement: .keyboard) {
-                        if focusedField == .offset {
-                            Spacer()
-                            Button("Done") {
-                                focusedField = nil
-                            }
-                        }
-                    }
-                }
-        }
-    }
-    
-    var amountToPayView: some View {
-        HStack {
-            Spacer()
-            Text("To pay: \(person.amountToPay.formatted(.currency(code: currencyCode)))")
-                .font(.title3)
-                .fontWeight(.semibold)
-                .foregroundStyle(.red)
-        }
     }
 }
 

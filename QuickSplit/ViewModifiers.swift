@@ -8,15 +8,15 @@
 import SwiftUI
 
 
-struct KeyboardDoneButton<ButtonView>: ViewModifier where ButtonView: View {
+struct KeyboardToolbarButton<V: View>: ViewModifier {
     let condition: Bool
-    let button: () -> ButtonView
+    let button: () -> V
     
     func body(content: Content) -> some View {
         content
             .toolbar {
                 ToolbarItemGroup(placement: .keyboard) {
-                    if (condition) {
+                    if condition {
                         Spacer()
                         button()
                     }
@@ -26,14 +26,16 @@ struct KeyboardDoneButton<ButtonView>: ViewModifier where ButtonView: View {
 }
 
 extension View {
-    func keyboardDoneButton(condition: Bool, button: @escaping () -> some View) -> some View {
-        modifier(KeyboardDoneButton(condition: condition, button: button))
+    func keyboardToolbarButton<V: View>(condition: Bool, @ViewBuilder button: @escaping () -> V) -> some View {
+        modifier(KeyboardToolbarButton(condition: condition, button: button))
     }
 }
 
-/*
+
+// Hack to refresh the view when it loses focus (forcing format to be applied)
+// Should be done automatically by Swift (bug?)
 struct RefreshOnLostFocus: ViewModifier {
-    @Binding var isFocused: Bool
+    var isFocused: Bool
     @Binding var refreshToggle: Bool
     
     func body(content: Content) -> some View {
@@ -48,8 +50,7 @@ struct RefreshOnLostFocus: ViewModifier {
 }
 
 extension View {
-    func refreshOnLostFocus(isFocused: Binding<Bool>, refreshToggle: Binding<Bool>) -> some View {
+    func refreshOnLostFocus(isFocused: Bool, refreshToggle: Binding<Bool>) -> some View {
         modifier(RefreshOnLostFocus(isFocused: isFocused, refreshToggle: refreshToggle))
     }
 }
-*/

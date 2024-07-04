@@ -13,6 +13,7 @@
 		38073C962C32F48B00ED94E4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 38073C952C32F48B00ED94E4 /* Preview Assets.xcassets */; };
 		38073C9F2C356A5900ED94E4 /* QuickSplitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38073C9E2C356A5900ED94E4 /* QuickSplitViewModel.swift */; };
 		38073CA52C36B3B900ED94E4 /* ViewModifiers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38073CA42C36B3B900ED94E4 /* ViewModifiers.swift */; };
+		38073CA72C3701A900ED94E4 /* PersonView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38073CA62C3701A900ED94E4 /* PersonView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,6 +24,7 @@
 		38073C952C32F48B00ED94E4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		38073C9E2C356A5900ED94E4 /* QuickSplitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSplitViewModel.swift; sourceTree = "<group>"; };
 		38073CA42C36B3B900ED94E4 /* ViewModifiers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewModifiers.swift; sourceTree = "<group>"; };
+		38073CA62C3701A900ED94E4 /* PersonView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PersonView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +60,7 @@
 				38073C8E2C32F48800ED94E4 /* QuickSplitApp.swift */,
 				38073C9E2C356A5900ED94E4 /* QuickSplitViewModel.swift */,
 				38073C902C32F48800ED94E4 /* QuickSplitView.swift */,
+				38073CA62C3701A900ED94E4 /* PersonView.swift */,
 				38073CA42C36B3B900ED94E4 /* ViewModifiers.swift */,
 				38073C922C32F48B00ED94E4 /* Assets.xcassets */,
 				38073C942C32F48B00ED94E4 /* Preview Content */,
@@ -143,6 +146,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				38073CA72C3701A900ED94E4 /* PersonView.swift in Sources */,
 				38073CA52C36B3B900ED94E4 /* ViewModifiers.swift in Sources */,
 				38073C912C32F48800ED94E4 /* QuickSplitView.swift in Sources */,
 				38073C9F2C356A5900ED94E4 /* QuickSplitViewModel.swift in Sources */,
