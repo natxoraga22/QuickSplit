@@ -15,6 +15,12 @@ class QuickSplitViewModel {
     var splitType: SplitType = .parts
     var people = [Person(), Person()]
     
+    var remainingPercentage: Int {
+        var remainingPercentage = 100
+        for person in people { remainingPercentage -= person.percentage ?? 0 }
+        return remainingPercentage
+    }
+    
     func addPerson() {
         people.append(Person())
     }
@@ -24,10 +30,7 @@ class QuickSplitViewModel {
     }
     
     func computeAmountsPerPerson() {
-        let amount = amount ?? 0.0
-        let tipPercentage = tipPercentage ?? 0
-        let totalAmount = amount + (amount * Double(tipPercentage)/100.0)
-        var remainingAmount = totalAmount
+        var remainingAmount = (amount ?? 0.0) + ((amount ?? 0.0) * Double(tipPercentage ?? 0)/100.0)
         
         var totalParts = 0
         for index in people.indices {
@@ -41,11 +44,26 @@ class QuickSplitViewModel {
         }
         
         // Amount to pay (by parts)
-        let partAmount = remainingAmount/Double(totalParts)
-        for index in people.indices {
-            people[index].amountToPay += partAmount
-            remainingAmount -= partAmount
+        if splitType == .parts {
+            let partAmount = remainingAmount/Double(totalParts)
+            for index in people.indices {
+                let amountToPayByParts = partAmount * Double(people[index].parts)
+                people[index].amountToPay += amountToPayByParts
+                remainingAmount -= amountToPayByParts
+            }
         }
+        
+        // Amount to pay (by percentage)
+        else if splitType == .percentages {
+            let totalAmount = remainingAmount
+            for index in people.indices {
+                let amountToPayByPercentage = totalAmount * Double(people[index].percentage ?? 0)/100.0
+                people[index].amountToPay += amountToPayByPercentage
+                remainingAmount -= amountToPayByPercentage
+            }
+        }
+        
+        // Remaining amount assigned to first person (change it to random?)
         if remainingAmount > 0.0 {
             people[0].amountToPay += remainingAmount
         }
@@ -54,13 +72,17 @@ class QuickSplitViewModel {
 
 
 @Observable
-class Person: Identifiable {
+class Person: Identifiable, Equatable {
     let id = UUID()
     
     var parts = 1
     var percentage: Int?
     var offset: Double?
     var amountToPay = 0.0
+    
+    static func == (lhs: Person, rhs: Person) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
 

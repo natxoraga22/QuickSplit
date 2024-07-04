@@ -45,6 +45,7 @@ struct QuickSplitView: View {
                 .onChange(of: viewModel.amount) { viewModel.computeAmountsPerPerson() }
                 .onChange(of: viewModel.tipPercentage) { viewModel.computeAmountsPerPerson() }
                 .onChange(of: viewModel.splitType) { viewModel.computeAmountsPerPerson() }
+                .onChange(of: viewModel.people) { viewModel.computeAmountsPerPerson() }
             }
             .navigationTitle("QuickSplit")
         }
@@ -155,6 +156,7 @@ struct PersonView: View {
             Text("To pay: \(person.amountToPay.formatted(.currency(code: currencyCode)))")
                 .font(.title3)
                 .fontWeight(.semibold)
+                .foregroundStyle(.red)
         }
     }
 }
