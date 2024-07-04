@@ -8,11 +8,20 @@
 import SwiftUI
 
 
+// TODO: Show remaining percentage when splitType == .percentage
+// TODO: Default equal percentages
+
+
 struct QuickSplitView: View {
     let currencyCode = Locale.current.currency?.identifier ?? "EUR"
     let currencySymbol = Locale.current.currencySymbol ?? "€"
     
+    enum Field: Hashable {
+        case amount, tipPercentage
+    }
+    
     @Bindable var viewModel: QuickSplitViewModel
+    @FocusState private var focusedField: Field?
     
     var body: some View {
         NavigationStack {
@@ -51,6 +60,7 @@ struct QuickSplitView: View {
         }
     }
     
+    @State private var refreshAmountInput = false
     var amountInput: some View {
         HStack {
             Text("Amount")
@@ -58,7 +68,20 @@ struct QuickSplitView: View {
             TextField("Amount", value: $viewModel.amount, format: .currency(code: currencyCode), prompt: Text("0 \(currencySymbol)"))
                 .font(.largeTitle)
                 .multilineTextAlignment(.trailing)
+                .focused($focusedField, equals: .amount)
                 .keyboardType(.decimalPad)
+                .keyboardDoneButton(condition: focusedField == .amount) {
+                    Button("Next") {
+                        focusedField = .tipPercentage
+                    }
+                }
+                // Hack to refresh the view when it loses focus (forcing format to be applied)
+                .id(refreshAmountInput)
+                .onChange(of: focusedField) { oldFocus, newFocus in
+                    if oldFocus == .amount && newFocus != .amount {
+                        refreshAmountInput.toggle()
+                    }
+                }
         }
     }
     
@@ -69,7 +92,18 @@ struct QuickSplitView: View {
             TextField("Tip", value: $viewModel.tipPercentage, format: .percent, prompt: Text("0%"))
                 .font(.largeTitle)
                 .multilineTextAlignment(.trailing)
+                .focused($focusedField, equals: .tipPercentage)
                 .keyboardType(.numberPad)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        if focusedField == .tipPercentage {
+                            Spacer()
+                            Button("Done") {
+                                focusedField = nil
+                            }
+                        }
+                    }
+                }
         }
     }
     
@@ -102,14 +136,21 @@ struct PersonView: View {
     let currencyCode = Locale.current.currency?.identifier ?? "EUR"
     let currencySymbol = Locale.current.currencySymbol ?? "€"
     
+    enum Field: Hashable {
+        case percentage, offset
+    }
+        
     @Bindable var person: Person
     let splitType: SplitType
+    @FocusState private var focusedField: Field?
     
     var body: some View {
         VStack(spacing: 8) {
             HStack {
-                Image(systemName: "person.fill")
+                Image(systemName: "person.crop.circle.fill")
+                    .imageScale(.large)
                     .font(.largeTitle)
+                    .opacity(0.3)
                 
                 VStack {
                     HStack {
@@ -121,7 +162,6 @@ struct PersonView: View {
                         Spacer()
                         offsetInput
                     }
-                    .font(.title2)
                     
                     amountToPayView
                 }
@@ -132,11 +172,13 @@ struct PersonView: View {
     
     var partsInput: some View {
         Stepper("\(person.parts) part(s)", value: $person.parts, in: 0...100)
+            .font(.title2)
             .fixedSize()
     }
     
     var percentageInput: some View {
         TextField("Percentage", value: $person.percentage, format: .percent, prompt: Text("0%"))
+            .font(.title2)
             .fixedSize()
             .keyboardType(.numberPad)
     }
@@ -145,8 +187,20 @@ struct PersonView: View {
         Group {
             Text("+")
             TextField("Offset", value: $person.offset, format: .currency(code: currencyCode), prompt: Text("0 \(currencySymbol)"))
+                .font(.title2)
                 .fixedSize()
+                .focused($focusedField, equals: .offset)
                 .keyboardType(.numberPad)
+                .toolbar {
+                    ToolbarItemGroup(placement: .keyboard) {
+                        if focusedField == .offset {
+                            Spacer()
+                            Button("Done") {
+                                focusedField = nil
+                            }
+                        }
+                    }
+                }
         }
     }
     

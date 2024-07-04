@@ -7,12 +7,49 @@
 
 import SwiftUI
 
-struct ViewModifiers: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+
+struct KeyboardDoneButton<ButtonView>: ViewModifier where ButtonView: View {
+    let condition: Bool
+    let button: () -> ButtonView
+    
+    func body(content: Content) -> some View {
+        content
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    if (condition) {
+                        Spacer()
+                        button()
+                    }
+                }
+            }
     }
 }
 
-#Preview {
-    ViewModifiers()
+extension View {
+    func keyboardDoneButton(condition: Bool, button: @escaping () -> some View) -> some View {
+        modifier(KeyboardDoneButton(condition: condition, button: button))
+    }
 }
+
+/*
+struct RefreshOnLostFocus: ViewModifier {
+    @Binding var isFocused: Bool
+    @Binding var refreshToggle: Bool
+    
+    func body(content: Content) -> some View {
+        content
+            .id(refreshToggle)
+            .onChange(of: isFocused) { oldValue, newValue in
+                if oldValue && !newValue {
+                    refreshToggle.toggle()
+                }
+            }
+    }
+}
+
+extension View {
+    func refreshOnLostFocus(isFocused: Binding<Bool>, refreshToggle: Binding<Bool>) -> some View {
+        modifier(RefreshOnLostFocus(isFocused: isFocused, refreshToggle: refreshToggle))
+    }
+}
+*/
