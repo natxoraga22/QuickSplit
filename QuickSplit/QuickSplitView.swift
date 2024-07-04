@@ -9,32 +9,44 @@ import SwiftUI
 
 
 struct QuickSplitView: View {
-    @Bindable private var viewModel = QuickSplitViewModel()
-    
     let currencyCode = Locale.current.currency?.identifier ?? "EUR"
+    let currencySymbol = Locale.current.currencySymbol ?? "€"
+    
+    @Bindable var viewModel: QuickSplitViewModel
     
     var body: some View {
         NavigationStack {
             ScrollView {
-                amountInput
-                tipPercentageInput
-                
-                numberOfPeopleInput
-                    .padding([.top])
-                    .padding([.top])
-                
-                if !viewModel.people.isEmpty {
-                    splitTypeInput
-                        .padding([.bottom])
+                VStack {
+                    amountInput
+                    tipPercentageInput
+                    
+                    numberOfPeopleInput
+                        .padding([.top])
+                        .padding([.top])
+                    
+                    if !viewModel.people.isEmpty {
+                        splitTypeInput
+                            .padding([.bottom])
+                    }
+                    
+                    ForEach(viewModel.people) { person in
+                        @Bindable var person = person
+                        PersonView(person: person, splitType: viewModel.splitType)
+                            // Update amounts per person on any input change
+                            .onChange(of: person.parts) { viewModel.computeAmountsPerPerson() }
+                            .onChange(of: person.percentage) { viewModel.computeAmountsPerPerson() }
+                            .onChange(of: person.offset) { viewModel.computeAmountsPerPerson() }
+                    }
+                    Spacer()
                 }
-                
-                ForEach($viewModel.people) { $person in
-                    PersonView(person: $person)
-                }
-                Spacer()
+                .padding()
+                // Update amounts per person on any input change
+                .onChange(of: viewModel.amount) { viewModel.computeAmountsPerPerson() }
+                .onChange(of: viewModel.tipPercentage) { viewModel.computeAmountsPerPerson() }
+                .onChange(of: viewModel.splitType) { viewModel.computeAmountsPerPerson() }
             }
             .navigationTitle("QuickSplit")
-            .padding()
         }
     }
     
@@ -42,7 +54,7 @@ struct QuickSplitView: View {
         HStack {
             Text("Amount")
                 .font(.title)
-            TextField("Amount", value: $viewModel.amount, format: .currency(code: currencyCode), prompt: Text("0"))
+            TextField("Amount", value: $viewModel.amount, format: .currency(code: currencyCode), prompt: Text("0 \(currencySymbol)"))
                 .font(.largeTitle)
                 .multilineTextAlignment(.trailing)
                 .keyboardType(.decimalPad)
@@ -53,7 +65,7 @@ struct QuickSplitView: View {
         HStack {
             Text("Tip")
                 .font(.title)
-            TextField("Tip", value: $viewModel.tipPercentage, format: .percent, prompt: Text("0"))
+            TextField("Tip", value: $viewModel.tipPercentage, format: .percent, prompt: Text("0%"))
                 .font(.largeTitle)
                 .multilineTextAlignment(.trailing)
                 .keyboardType(.numberPad)
@@ -86,41 +98,63 @@ struct QuickSplitView: View {
 
 
 struct PersonView: View {
-    @Binding var person: Person
+    let currencyCode = Locale.current.currency?.identifier ?? "EUR"
+    let currencySymbol = Locale.current.currencySymbol ?? "€"
+    
+    @Bindable var person: Person
+    let splitType: SplitType
     
     var body: some View {
         VStack(spacing: 8) {
             HStack {
                 Image(systemName: "person.fill")
-                Spacer()
-                /*if splitType == .parts {
-                    Stepper("\(person.parts) part(s)", value: $person.parts, in: 0...100)
-                        .fixedSize()
+                    .font(.largeTitle)
+                
+                VStack {
+                    HStack {
+                        Spacer()
+                        switch splitType {
+                            case .parts: partsInput
+                            case .percentages: percentageInput
+                        }
+                        Spacer()
+                        offsetInput
+                    }
+                    .font(.title2)
+                    
+                    amountToPayView
                 }
-                else if splitType == .percentages {
-                    TextField("Percentage", value: $person.percentage, formatter: Formatter.percentFormatter, prompt: Text("0"))
-                        .fixedSize()
-                        .keyboardType(.numberPad)
-                    Text("%")
-                }*/
-                Spacer()
-                Text("+")
-                TextField("Offset", value: $person.offset, formatter: Formatter.currencyFormatter, prompt: Text("0"))
-                    .fixedSize()
-                    .keyboardType(.numberPad)
-                Text(Locale.current.currencySymbol ?? "€")
             }
-            .font(.title2)
-            .padding([.horizontal])
-            
-            HStack {
-                Spacer()
-                Text("Amount to pay: \(person.amountToPay.formatted(.currency(code: Locale.current.currency?.identifier ?? "EUR")))")
-                    .font(.headline)
-            }
-            .padding([.horizontal])
-            
             Divider()
+        }
+    }
+    
+    var partsInput: some View {
+        Stepper("\(person.parts) part(s)", value: $person.parts, in: 0...100)
+            .fixedSize()
+    }
+    
+    var percentageInput: some View {
+        TextField("Percentage", value: $person.percentage, format: .percent, prompt: Text("0%"))
+            .fixedSize()
+            .keyboardType(.numberPad)
+    }
+    
+    var offsetInput: some View {
+        Group {
+            Text("+")
+            TextField("Offset", value: $person.offset, format: .currency(code: currencyCode), prompt: Text("0 \(currencySymbol)"))
+                .fixedSize()
+                .keyboardType(.numberPad)
+        }
+    }
+    
+    var amountToPayView: some View {
+        HStack {
+            Spacer()
+            Text("To pay: \(person.amountToPay.formatted(.currency(code: currencyCode)))")
+                .font(.title3)
+                .fontWeight(.semibold)
         }
     }
 }
@@ -129,5 +163,5 @@ struct PersonView: View {
 
 
 #Preview {
-    QuickSplitView()
+    QuickSplitView(viewModel: QuickSplitViewModel())
 }

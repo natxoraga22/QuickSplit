@@ -13,7 +13,6 @@
 		38073C962C32F48B00ED94E4 /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 38073C952C32F48B00ED94E4 /* Preview Assets.xcassets */; };
 		38073C9D2C3429B100ED94E4 /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38073C9C2C3429B100ED94E4 /* Extensions.swift */; };
 		38073C9F2C356A5900ED94E4 /* QuickSplitViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38073C9E2C356A5900ED94E4 /* QuickSplitViewModel.swift */; };
-		38073CA12C356ACB00ED94E4 /* QuickSplitModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38073CA02C356ACB00ED94E4 /* QuickSplitModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -24,7 +23,6 @@
 		38073C952C32F48B00ED94E4 /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		38073C9C2C3429B100ED94E4 /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		38073C9E2C356A5900ED94E4 /* QuickSplitViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSplitViewModel.swift; sourceTree = "<group>"; };
-		38073CA02C356ACB00ED94E4 /* QuickSplitModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickSplitModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,7 +56,6 @@
 			isa = PBXGroup;
 			children = (
 				38073C8E2C32F48800ED94E4 /* QuickSplitApp.swift */,
-				38073CA02C356ACB00ED94E4 /* QuickSplitModel.swift */,
 				38073C9E2C356A5900ED94E4 /* QuickSplitViewModel.swift */,
 				38073C902C32F48800ED94E4 /* QuickSplitView.swift */,
 				38073C9C2C3429B100ED94E4 /* Extensions.swift */,
@@ -147,7 +144,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				38073C912C32F48800ED94E4 /* QuickSplitView.swift in Sources */,
-				38073CA12C356ACB00ED94E4 /* QuickSplitModel.swift in Sources */,
 				38073C9F2C356A5900ED94E4 /* QuickSplitViewModel.swift in Sources */,
 				38073C9D2C3429B100ED94E4 /* Extensions.swift in Sources */,
 				38073C8F2C32F48800ED94E4 /* QuickSplitApp.swift in Sources */,

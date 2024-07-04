@@ -10,9 +10,11 @@ import SwiftUI
 
 @main
 struct QuickSplitApp: App {
+    @State private var quickSplitViewModel = QuickSplitViewModel()
+    
     var body: some Scene {
         WindowGroup {
-            QuickSplitView()
+            QuickSplitView(viewModel: quickSplitViewModel)
         }
     }
 }
