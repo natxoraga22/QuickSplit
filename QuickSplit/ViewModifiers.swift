@@ -8,6 +8,8 @@
 import SwiftUI
 
 
+// MARK: - KeyboardToolbarButton
+
 struct KeyboardToolbarButton<V: View>: ViewModifier {
     let condition: Bool
     let button: () -> V
@@ -31,6 +33,8 @@ extension View {
     }
 }
 
+
+// MARK: - RefreshOnLostFocus
 
 // Hack to refresh the view when it loses focus (forcing format to be applied)
 // Should be done automatically by Swift (bug?)
