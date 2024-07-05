@@ -41,31 +41,28 @@ struct QuickSplitView: View {
                     
                     ForEach(viewModel.people) { person in
                         @Bindable var person = person
-                        PersonView(person: person, splitType: viewModel.splitType)
-                            // Update amounts per person on any input change
-                            .onChange(of: person.parts) { viewModel.computeAmountsPerPerson() }
-                            .onChange(of: person.percentage) { viewModel.computeAmountsPerPerson() }
-                            .onChange(of: person.offset) { viewModel.computeAmountsPerPerson() }
+                        PersonView(person: person, splitType: viewModel.splitType, onChange: viewModel.computeAmountsPerPerson)
                     }
                     Spacer()
                 }
                 .padding()
-                // Update amounts per person on any input change
-                .onChange(of: viewModel.amount) { viewModel.computeAmountsPerPerson() }
-                .onChange(of: viewModel.tipPercentage) { viewModel.computeAmountsPerPerson() }
-                .onChange(of: viewModel.splitType) { viewModel.computeAmountsPerPerson() }
-                .onChange(of: viewModel.people) { viewModel.computeAmountsPerPerson() }
             }
             .navigationTitle("QuickSplit")
         }
     }
+    
+    
+    // MARK: - Inputs
     
     @State private var refreshAmountInput = false
     var amountInput: some View {
         HStack {
             Text("Amount")
                 .font(.title)
-            TextField("Amount", value: $viewModel.amount, format: .currency(code: currencyCode), prompt: Text("0 \(currencySymbol)"))
+            TextField("Amount",
+                      value: $viewModel.amount.onChange(perform: viewModel.computeAmountsPerPerson),
+                      format: .currency(code: currencyCode),
+                      prompt: Text("0 \(currencySymbol)"))
                 .font(.largeTitle)
                 .multilineTextAlignment(.trailing)
                 .focused($focusedField, equals: .amount)
@@ -84,7 +81,10 @@ struct QuickSplitView: View {
         HStack {
             Text("Tip")
                 .font(.title)
-            TextField("Tip", value: $viewModel.tipPercentage, format: .percent, prompt: Text("0%"))
+            TextField("Tip",
+                      value: $viewModel.tipPercentage.onChange(perform: viewModel.computeAmountsPerPerson),
+                      format: .percent,
+                      prompt: Text("0%"))
                 .font(.largeTitle)
                 .multilineTextAlignment(.trailing)
                 .focused($focusedField, equals: .tipPercentage)
@@ -105,15 +105,21 @@ struct QuickSplitView: View {
                 .fontWeight(.semibold)
             Spacer()
             Stepper("\(viewModel.people.count)",
-                    onIncrement: { viewModel.addPerson() },
-                    onDecrement: { viewModel.removePerson() })
+                    onIncrement: {
+                        viewModel.addPerson()
+                        viewModel.computeAmountsPerPerson()
+                    },
+                    onDecrement: {
+                        viewModel.removePerson()
+                        viewModel.computeAmountsPerPerson()
+                    })
                 .font(.title)
                 .fixedSize()
         }
     }
     
     var splitTypeInput: some View {
-        Picker("Split type", selection: $viewModel.splitType) {
+        Picker("Split type", selection: $viewModel.splitType.onChange(perform: viewModel.computeAmountsPerPerson)) {
             ForEach(SplitType.allCases) { splitType in
                 Text(splitType.rawValue.capitalized)
             }
@@ -124,6 +130,8 @@ struct QuickSplitView: View {
 
 
 
+
+// MARK: - Preview
 
 #Preview {
     QuickSplitView(viewModel: QuickSplitViewModel())

@@ -18,6 +18,7 @@ struct PersonView: View {
         
     @Bindable var person: Person
     let splitType: SplitType
+    let onChange: () -> Void
     @FocusState private var focusedField: Field?
     
     var body: some View {
@@ -66,14 +67,17 @@ struct PersonView: View {
     // MARK: - Inputs
     
     private var partsInput: some View {
-        Stepper("\(person.parts) part(s)", value: $person.parts, in: 0...100)
+        Stepper("\(person.parts) part(s)", value: $person.parts.onChange(perform: onChange), in: 0...100)
             .font(.title2)
             .fixedSize()
     }
     
     @State private var refreshPercentageInput = false
     private var percentageInput: some View {
-        TextField("Percentage", value: $person.percentage, format: .percent, prompt: Text("0%"))
+        TextField("Percentage",
+                  value: $person.percentage.onChange(perform: onChange),
+                  format: .percent,
+                  prompt: Text("0%"))
             .font(.title2)
             .fixedSize()
             .keyboardType(.numberPad)
@@ -87,7 +91,9 @@ struct PersonView: View {
     
     @State private var refreshOffsetInput = false
     private var offsetInput: some View {
-        TextField("Offset", value: $person.offset, format: .currency(code: currencyCode).sign(strategy: .always()),
+        TextField("Offset",
+                  value: $person.offset.onChange(perform: onChange),
+                  format: .currency(code: currencyCode).sign(strategy: .always()),
                   prompt: Text("+0 \(currencySymbol)"))
             .font(.title2)
             .fixedSize()
