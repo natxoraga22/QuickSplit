@@ -13,9 +13,6 @@ import SwiftUI
 
 
 struct QuickSplitView: View {
-    let currencyCode = Locale.current.currency?.identifier ?? "EUR"
-    let currencySymbol = Locale.current.currencySymbol ?? "€"
-    
     enum Field: Hashable {
         case amount, tipPercentage
     }
@@ -61,8 +58,8 @@ struct QuickSplitView: View {
                 .font(.title)
             TextField("Amount",
                       value: $viewModel.amount.onChange(perform: viewModel.computeAmountsPerPerson),
-                      format: .currency(code: currencyCode),
-                      prompt: Text("0 \(currencySymbol)"))
+                      format: .currency(code: Constants.currencyCode),
+                      prompt: Text("0 \(Constants.currencySymbol)"))
                 .font(.largeTitle)
                 .multilineTextAlignment(.trailing)
                 .focused($focusedField, equals: .amount)

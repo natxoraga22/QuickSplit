@@ -9,9 +9,6 @@ import SwiftUI
 
 
 struct PersonView: View {
-    let currencyCode = Locale.current.currency?.identifier ?? "EUR"
-    let currencySymbol = Locale.current.currencySymbol ?? "€"
-    
     enum Field: Hashable {
         case percentage, offset
     }
@@ -56,7 +53,7 @@ struct PersonView: View {
     private var amountToPayView: some View {
         HStack {
             Spacer()
-            Text("To pay: \(person.amountToPay.formatted(.currency(code: currencyCode)))")
+            Text("To pay: \(person.amountToPay.formatted(.currency(code: Constants.currencyCode)))")
                 .font(.title3)
                 .fontWeight(.semibold)
                 .foregroundStyle(.red)
@@ -93,8 +90,8 @@ struct PersonView: View {
     private var offsetInput: some View {
         TextField("Offset",
                   value: $person.offset.onChange(perform: onChange),
-                  format: .currency(code: currencyCode).sign(strategy: .always()),
-                  prompt: Text("+0 \(currencySymbol)"))
+                  format: .currency(code: Constants.currencyCode).sign(strategy: .always()),
+                  prompt: Text("+0 \(Constants.currencySymbol)"))
             .font(.title2)
             .fixedSize()
             .focused($focusedField, equals: .offset)
