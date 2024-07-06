@@ -77,7 +77,6 @@ struct PersonView: View {
                   format: .percent,
                   prompt: Text("0%"))
             .font(.title2)
-            .foregroundStyle(viewModel.remainingPercentage != 0 ? .red : .black)
             .fixedSize()
             .focused($focusedField, equals: .percentage)
             .keyboardType(.numberPad)
