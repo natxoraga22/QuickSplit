@@ -14,8 +14,7 @@ struct PersonView: View {
     }
         
     @Bindable var person: Person
-    let splitType: SplitType
-    let onChange: () -> Void
+    var viewModel: QuickSplitViewModel
     @FocusState private var focusedField: Field?
     
     var body: some View {
@@ -26,7 +25,7 @@ struct PersonView: View {
                 VStack {
                     HStack {
                         Spacer()
-                        switch splitType {
+                        switch viewModel.splitType {
                             case .parts: partsInput
                             case .percentages: percentageInput
                         }
@@ -64,7 +63,9 @@ struct PersonView: View {
     // MARK: - Inputs
     
     private var partsInput: some View {
-        Stepper("\(person.parts) part(s)", value: $person.parts.onChange(perform: onChange), in: 0...100)
+        Stepper("\(person.parts) part(s)",
+                value: $person.parts.onChange(perform: viewModel.computeAmountsPerPerson),
+                in: 0...100)
             .font(.title2)
             .fixedSize()
     }
@@ -72,15 +73,21 @@ struct PersonView: View {
     @State private var refreshPercentageInput = false
     private var percentageInput: some View {
         TextField("Percentage",
-                  value: $person.percentage.onChange(perform: onChange),
+                  value: $person.percentage.onChange(perform: viewModel.computeAmountsPerPerson),
                   format: .percent,
                   prompt: Text("0%"))
             .font(.title2)
+            .foregroundStyle(viewModel.remainingPercentage != 0 ? .red : .black)
             .fixedSize()
+            .focused($focusedField, equals: .percentage)
             .keyboardType(.numberPad)
-            .keyboardToolbarButton(condition: focusedField == .percentage) {
-                Button("Done") {
-                    focusedField = nil
+            .toolbar {
+                ToolbarItemGroup(placement: .keyboard) {
+                    if focusedField == .percentage {
+                        Text("Remaining: \(viewModel.remainingPercentage)%")
+                        Spacer()
+                        Button("Done") { focusedField = nil }
+                    }
                 }
             }
             .refreshOnLostFocus(isFocused: focusedField == .percentage, refreshToggle: $refreshPercentageInput)
@@ -89,7 +96,7 @@ struct PersonView: View {
     @State private var refreshOffsetInput = false
     private var offsetInput: some View {
         TextField("Offset",
-                  value: $person.offset.onChange(perform: onChange),
+                  value: $person.offset.onChange(perform: viewModel.computeAmountsPerPerson),
                   format: .currency(code: Constants.currencyCode).sign(strategy: .always()),
                   prompt: Text("+0 \(Constants.currencySymbol)"))
             .font(.title2)
@@ -97,9 +104,7 @@ struct PersonView: View {
             .focused($focusedField, equals: .offset)
             .keyboardType(.numberPad)
             .keyboardToolbarButton(condition: focusedField == .offset) {
-                Button("Done") {
-                    focusedField = nil
-                }
+                Button("Done") { focusedField = nil }
             }
             .refreshOnLostFocus(isFocused: focusedField == .offset, refreshToggle: $refreshOffsetInput)
     }

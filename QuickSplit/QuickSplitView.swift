@@ -8,10 +8,6 @@
 import SwiftUI
 
 
-// TODO: Show remaining percentage when splitType == .percentage
-// TODO: Default equal percentages
-
-
 struct QuickSplitView: View {
     enum Field: Hashable {
         case amount, tipPercentage
@@ -38,7 +34,7 @@ struct QuickSplitView: View {
                     
                     ForEach(viewModel.people) { person in
                         @Bindable var person = person
-                        PersonView(person: person, splitType: viewModel.splitType, onChange: viewModel.computeAmountsPerPerson)
+                        PersonView(person: person, viewModel: viewModel)
                     }
                     Spacer()
                 }
@@ -65,9 +61,7 @@ struct QuickSplitView: View {
                 .focused($focusedField, equals: .amount)
                 .keyboardType(.decimalPad)
                 .keyboardToolbarButton(condition: focusedField == .amount) {
-                    Button("Next") {
-                        focusedField = .tipPercentage
-                    }
+                    Button("Next") { focusedField = .tipPercentage }
                 }
                 .refreshOnLostFocus(isFocused: focusedField == .amount, refreshToggle: $refreshAmountInput)
         }
@@ -87,9 +81,7 @@ struct QuickSplitView: View {
                 .focused($focusedField, equals: .tipPercentage)
                 .keyboardType(.numberPad)
                 .keyboardToolbarButton(condition: focusedField == .tipPercentage) {
-                    Button("Done") {
-                        focusedField = nil
-                    }
+                    Button("Done") { focusedField = nil }
                 }
                 .refreshOnLostFocus(isFocused: focusedField == .tipPercentage, refreshToggle: $refreshTipPercentageInput)
         }

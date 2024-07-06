@@ -29,44 +29,69 @@ class QuickSplitViewModel {
         if people.count > 1 { people.removeLast() }
     }
     
+    
+    // MARK: - Main function
+    
     func computeAmountsPerPerson() {
-        var remainingAmount = (amount ?? 0.0) + ((amount ?? 0.0) * Double(tipPercentage ?? 0)/100.0)
+        // totalAmount = amount + tip
+        let totalAmount = (amount ?? 0.0) + ((amount ?? 0.0) * Double(tipPercentage ?? 0)/100.0)
+        var remainingAmount = totalAmount
         
-        var totalParts = 0
-        for index in people.indices {
-            // Init
-            totalParts += people[index].parts
-            people[index].amountToPay = 0.0
-            
-            // Offset first
-            people[index].amountToPay += people[index].offset ?? 0.0
-            remainingAmount -= people[index].offset ?? 0.0
+        // First, add offsets to person.amountToPay
+        people = people.map { person in
+            person.amountToPay = person.offset ?? 0.0
+            remainingAmount -= person.offset ?? 0.0
+            return person
         }
         
-        // Amount to pay (by parts)
-        if splitType == .parts {
-            let partAmount = remainingAmount/Double(totalParts)
-            for index in people.indices {
-                let amountToPayByParts = partAmount * Double(people[index].parts)
-                people[index].amountToPay += amountToPayByParts
-                remainingAmount -= amountToPayByParts
-            }
-        }
-        
-        // Amount to pay (by percentage)
-        else if splitType == .percentages {
-            let totalAmount = remainingAmount
-            for index in people.indices {
-                let amountToPayByPercentage = totalAmount * Double(people[index].percentage ?? 0)/100.0
-                people[index].amountToPay += amountToPayByPercentage
-                remainingAmount -= amountToPayByPercentage
-            }
+        // Compute amounts based on splitType
+        switch splitType {
+            case .parts: remainingAmount = computeAmountsPerPersonByParts(remainingAmount: remainingAmount)
+            case .percentages: remainingAmount = computeAmountsPerPersonByPercentage(remainingAmount: remainingAmount)
         }
         
         // Remaining amount assigned to first person (change it to random?)
-        if remainingAmount > 0.0 {
-            people[0].amountToPay += remainingAmount
+        if remainingAmount > 0.0 { people[0].amountToPay += remainingAmount }
+    }
+    
+    private func computeAmountsPerPersonByParts(remainingAmount: Double) -> Double {
+        var remainingAmount = remainingAmount
+        // Count total parts
+        let totalParts = people.reduce(0) { result, person in result + person.parts }
+        
+        // Amount to pay (by parts)
+        let partAmount = remainingAmount/Double(totalParts)
+        people = people.map { person in
+            let amountToPayByParts = partAmount * Double(person.parts)
+            person.amountToPay += amountToPayByParts
+            remainingAmount -= amountToPayByParts
+            return person
         }
+        return remainingAmount
+    }
+    
+    private func computeAmountsPerPersonByPercentage(remainingAmount: Double) -> Double {
+        var remainingAmount = remainingAmount
+        // Set equal percentages if all are empty
+        let percentagesAreEmpty = people.allSatisfy { person in person.percentage == nil }
+        if percentagesAreEmpty {
+            let equalPercentage = 100/people.count
+            people = people.map { person in
+                person.percentage = equalPercentage
+                return person
+            }
+            people[0].percentage! += 100%people.count
+        }
+
+        // Amount to pay (by percentage)
+        let totalAmount = remainingAmount
+        people = people.map { person in
+            let amountToPayByPercentage = totalAmount * Double(person.percentage ?? 0)/100.0
+            person.amountToPay += amountToPayByPercentage
+            remainingAmount -= amountToPayByPercentage
+            return person
+        }
+        return remainingAmount
     }
 }
 
