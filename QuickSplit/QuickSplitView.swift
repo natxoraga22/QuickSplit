@@ -110,7 +110,7 @@ struct QuickSplitView: View {
     var splitTypeInput: some View {
         Picker("Split type", selection: $viewModel.splitType.onChange(perform: viewModel.computeAmountsPerPerson)) {
             ForEach(SplitType.allCases) { splitType in
-                Text(splitType.rawValue.capitalized)
+                Text(splitType.string)
             }
         }
         .pickerStyle(.segmented)

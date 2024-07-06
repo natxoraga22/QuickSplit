@@ -121,6 +121,17 @@
         }
       }
     },
+    "Parts" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Partes"
+          }
+        }
+      }
+    },
     "People" : {
       "localizations" : {
         "es" : {
@@ -137,6 +148,17 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Porcentaje"
+          }
+        }
+      }
+    },
+    "Percentages" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Porcentajes"
           }
         }
       }

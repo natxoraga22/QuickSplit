@@ -113,5 +113,9 @@ class Person: Identifiable, Equatable {
 
 enum SplitType: String, CaseIterable, Identifiable {
     case parts, percentages
+    
     var id: Self { self }
+    var string: String {
+        return String(localized: String.LocalizationValue(self.rawValue.capitalized))
+    }
 }
